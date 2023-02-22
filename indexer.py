@@ -74,7 +74,7 @@ def indexer():
                     # adding docIDs, frequencies, and URLs to dict and defaultdict
                     for stem, post in file_index.items():
                         if stem not in main_index:
-                            main_index[stem] = heapq.heapify([])
+                            main_index[stem] = []
                         heapq.heappush(main_index[stem], post)
                                 
                     url_index[docID] = data['url']
