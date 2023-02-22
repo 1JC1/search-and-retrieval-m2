@@ -1,4 +1,4 @@
-import json, os, re, sys
+import json, os, re, sys, heapq
 from bs4 import BeautifulSoup
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
@@ -14,7 +14,7 @@ def default(obj):
 def indexer():
     '''Read through JSON file, create docID, parse content with listed encoding, tokenize,
         stemming and other language processing, add doc as postings to inverted index (dictionary) '''
-    main_index = defaultdict(dict)
+    main_index = dict(dict)
     url_index = dict()
     docID = 0
 
@@ -29,10 +29,12 @@ def indexer():
             
             # opening the subdirectories in dev directory
             for file in os.listdir(dir):
-                # file_index = defaultdict(int)
                 
                 # opening each file in subdirectories and parsing data
                 if os.path.splitext(file)[1] == '.json':
+                    file_index = dict(int)
+                    wordPosition = 0
+                    
                     with open(dir + '/' + file) as f:
 
                         # try/except allows us to view any errors that may occur and continue the code
@@ -56,24 +58,29 @@ def indexer():
                                 stem = stemmer.stem(alphanum)
                                 
                                 # print(f'Token: {token}, Stem: {stem}')
-                            
-                                # file_index[stem] += 1
                                 
                                 # creating a Posting object to easily access docID and frequencies of tokens
                                 # & putting the Posting objects into the main_index
-                                if docID not in main_index[stem]:
-                                    main_index[stem][docID] = Posting()
+                                if stem not in file_index:
+                                    # main_index[stem][docID] = Posting()
+                                    file_index[stem] = Posting(docID)
                                 else:
-                                    main_index[stem][docID].increment_freq()
+                                    # main_index[stem][docID].increment_freq()
+                                    file_index[stem].increment_freq()
+                                    file_index[stem].add_position(wordPosition)
+                                
+                                wordPosition += 1
                 
         
-                        # adding docIDs, frequencies, and URLs to dict and defaultdict
-                        # for stem, freq in file_index.items():
-                        #     main_index[stem].append((docID, freq))
-                                    
-                        url_index[docID] = data['url']
-                            
-                        docID += 1
+                    # adding docIDs, frequencies, and URLs to dict and defaultdict
+                    for stem, post in file_index.items():
+                        if stem not in main_index:
+                            main_index[stem] = heapq.heapify([])
+                        heapq.heappush(main_index[stem], post)
+                                
+                    url_index[docID] = data['url']
+                        
+                    docID += 1
 
             print(f'Directory {dir} done\n')
             # break
