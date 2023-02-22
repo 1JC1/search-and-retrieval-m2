@@ -101,5 +101,7 @@ def indexer():
     # print('url index')
     # print(url_index)  
     
+    return main_index
+    
 if __name__ == "__main__":
-    indexer()
+    main_index = indexer()
