@@ -2,7 +2,6 @@ import json, os, re, sys, heapq
 from bs4 import BeautifulSoup
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
-from collections import defaultdict
 from Posting import Posting
 
 def default(obj):
@@ -14,7 +13,7 @@ def default(obj):
 def indexer():
     '''Read through JSON file, create docID, parse content with listed encoding, tokenize,
         stemming and other language processing, add doc as postings to inverted index (dictionary) '''
-    main_index = dict(dict)
+    main_index = dict()
     url_index = dict()
     docID = 0
 
@@ -32,7 +31,7 @@ def indexer():
                 
                 # opening each file in subdirectories and parsing data
                 if os.path.splitext(file)[1] == '.json':
-                    file_index = dict(int)
+                    file_index = dict()
                     wordPosition = 0
                     
                     with open(dir + '/' + file) as f:
