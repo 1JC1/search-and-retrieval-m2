@@ -1,4 +1,4 @@
-import json, os, re, sys, heapq
+import json, os, re, sys, bisect
 from bs4 import BeautifulSoup
 from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
@@ -75,7 +75,7 @@ def indexer():
                     for stem, post in file_index.items():
                         if stem not in main_index:
                             main_index[stem] = []
-                        heapq.heappush(main_index[stem], post)
+                        bisect.insort(main_index[stem], post)
                                 
                     url_index[docID] = data['url']
                         

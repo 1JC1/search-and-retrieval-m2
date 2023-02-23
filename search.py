@@ -45,6 +45,5 @@ def intersect(list_1, list_2):
         
 
 if __name__ == "__main__":
-    global main_index
     main_index = indexer()
     
