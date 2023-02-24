@@ -5,8 +5,6 @@ from nltk.stem.snowball import SnowballStemmer
 from Posting import Posting
 from indexer import indexer
 
-main_index = dict()
-
 def process_query(query: str):
     # add stopword removal / recognition
     tokens_to_search = set()
@@ -21,9 +19,6 @@ def process_query(query: str):
             tokens_to_search.add(stem)
     
     return tokens_to_search
-
-def search(tokens: set(str)):
-    token_list = list(tokens).sort(key=lambda t: len(main_index[t]))
 
 def intersect(list_1, list_2):
     answer = []
@@ -42,8 +37,25 @@ def intersect(list_1, list_2):
     
     return answer
     
-        
-
-if __name__ == "__main__":
-    main_index = indexer()
+def search(tokens: set(str), index):
+    token_list = [t for t in tokens if t in index]
+    token_list.sort(key=lambda t: len(index[t]))
     
+    result_list = []
+    
+    if len(token_list) > 1:
+        result_list = intersect(index[token_list[0]], index[token_list[1]])
+        
+        for i in range(2,len(token_list)):
+            result_list = intersect(result_list, index[token_list[i]])
+        
+    elif len(token_list) == 1:
+        result_list = index[token_list[0]]
+        
+    # Return only top five after sorting them based on freq or whatever other ranking
+    
+ 
+if __name__ == "__main__":
+    token_index = indexer()
+    query = input("What would you like to search?\n")
+    search(process_query(query), token_index)
