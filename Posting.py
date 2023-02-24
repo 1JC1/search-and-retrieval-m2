@@ -26,6 +26,9 @@ class Posting:
         
     def __lt__(self, other):
         return self.docID < other.docID
+    
+    def __eq__(self, other):
+        return self.docID == other.docID
         
     def __str__(self) -> str:
         return f"Posting(freq: {self.freq})"

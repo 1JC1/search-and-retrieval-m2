@@ -4,6 +4,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from Posting import Posting
 from indexer import indexer
+from collections import defaultdict
 
 def process_query(query: str):
     # add stopword removal / recognition
@@ -21,21 +22,33 @@ def process_query(query: str):
     return tokens_to_search
 
 def intersect(list_1, list_2):
-    answer = []
+    answer = set()
     p1 = 0
     p2 = 0
     
     while p1 < len(list_1) and p2 < len(list_2):
-        if list_1[p1].get_docID() == list_2[p2].get_docID():
-            answer.append(list_1[p1])
+        if list_1[p1] == list_2[p2]:
+            answer.add(list_1[p1])
+            answer.add(list_1[p2])
             p1 += 1
             p2 += 1
-        elif list_1[p1].get_docID() < list_2[p2].get_docID():
+        elif list_1[p1] < list_2[p2]:
             p1 += 1
         else:
             p2 += 1
     
     return answer
+
+
+def simple_rank(result_list):
+    rel_score = defaultdict(float)
+
+    for posting in result_list:
+        rel_score[posting.get_docID()] += posting.get_freq()
+
+    return sorted(rel_score, key=lambda x : rel_score[x], reverse=True)[0:5] 
+    
+
     
 def search(tokens: set[str], index):
     token_list = [t for t in tokens if t in index]
@@ -51,10 +64,9 @@ def search(tokens: set[str], index):
         
     elif len(token_list) == 1:
         result_list = index[token_list[0]]
-    
-    result_list.sort(key=lambda r: r.get_freq(), reverse=True)
-    # Return only top five after sorting them based on freq or whatever other ranking
-    return result_list[0:5]
+
+    return simple_rank(result_list)
+
  
 if __name__ == "__main__":
     token_index, url_index = indexer()
