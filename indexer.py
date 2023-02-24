@@ -84,24 +84,24 @@ def indexer():
             print(f'Directory {dir} done\n')
             # break
 
-    # ensuring main_index.json gets dumped in inverted-index-m1 directory instead of DEV 
-    os.chdir("../inverted-index-m1")
-    
-    # dumping main_index into a json
-    with open("main_index.json", 'w') as f:
-        json.dump(main_index, f, default=default)
-        print("File index made")
-        
-    print(f"Number of documents: {docID + 1}")
-    print(f"Number of tokens: {len(main_index)}")
-    print(f"Size of index: {sys.getsizeof(main_index)}")
+    # # ensuring main_index.json gets dumped in inverted-index-m1 directory instead of DEV 
+    # os.chdir("../inverted-index-m1")
+    #
+    # # dumping main_index into a json
+    # with open("main_index.json", 'w') as f:
+    #     json.dump(main_index, f, default=default)
+    #     print("File index made")
+    #
+    # print(f"Number of documents: {docID + 1}")
+    # print(f"Number of tokens: {len(main_index)}")
+    # print(f"Size of index: {sys.getsizeof(main_index)}")
 
     # print('main index:')
     # print(main_index)
     # print('url index')
     # print(url_index)  
     
-    return main_index
+    return (main_index, url_index)
     
 if __name__ == "__main__":
     main_index = indexer()

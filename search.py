@@ -27,7 +27,7 @@ def intersect(list_1, list_2):
     
     while p1 < len(list_1) and p2 < len(list_2):
         if list_1[p1].get_docID() == list_2[p2].get_docID():
-            answer.append(list_1[p1].get_docID())
+            answer.append(list_1[p1])
             p1 += 1
             p2 += 1
         elif list_1[p1].get_docID() < list_2[p2].get_docID():
@@ -37,7 +37,7 @@ def intersect(list_1, list_2):
     
     return answer
     
-def search(tokens: set(str), index):
+def search(tokens: set[str], index):
     token_list = [t for t in tokens if t in index]
     token_list.sort(key=lambda t: len(index[t]))
     
@@ -51,11 +51,25 @@ def search(tokens: set(str), index):
         
     elif len(token_list) == 1:
         result_list = index[token_list[0]]
-        
-    # Return only top five after sorting them based on freq or whatever other ranking
     
+    result_list.sort(key=lambda r: r.get_freq(), reverse=True)
+    # Return only top five after sorting them based on freq or whatever other ranking
+    return result_list[0:5]
  
 if __name__ == "__main__":
-    token_index = indexer()
-    query = input("What would you like to search?\n")
-    search(process_query(query), token_index)
+    token_index, url_index = indexer()
+    
+    while True:
+        query = input("What would you like to search? Press Q to quit.\n")
+        
+        if query.lower() == 'q':
+            break
+        
+        result_list = search(process_query(query), token_index)
+        
+        print(f"Searching for query {query}... ")
+        for count, result in enumerate(result_list, start=1):
+            print(f"{count} | {url_index[result.get_docID()]:100} | {result.get_freq()}")
+        
+        print()
+    
