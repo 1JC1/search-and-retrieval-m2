@@ -4,6 +4,9 @@ from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from Posting import Posting
 
+main_index = dict()
+url_index = dict()
+
 def default(obj):
     '''Encoder object to serialize Postings class as a JSON object'''
     if hasattr(obj, 'to_json'):
@@ -13,8 +16,8 @@ def default(obj):
 def indexer():
     '''Read through JSON file, create docID, parse content with listed encoding, tokenize,
         stemming and other language processing, add doc as postings to inverted index (dictionary) '''
-    main_index = dict()
-    url_index = dict()
+    global main_index
+    global url_index
     docID = 0
 
     # using Porter2 stemmer to stem all english words except stop words
@@ -62,7 +65,7 @@ def indexer():
                                 # & putting the Posting objects into the main_index
                                 if stem not in file_index:
                                     # main_index[stem][docID] = Posting()
-                                    file_index[stem] = Posting(docID)
+                                    file_index[stem] = Posting(docID, stem)
                                 else:
                                     # main_index[stem][docID].increment_freq()
                                     file_index[stem].increment_freq()
@@ -84,13 +87,17 @@ def indexer():
             print(f'Directory {dir} done\n')
             # break
 
-    # # ensuring main_index.json gets dumped in inverted-index-m1 directory instead of DEV 
-    # os.chdir("../inverted-index-m1")
-    #
-    # # dumping main_index into a json
-    # with open("main_index.json", 'w') as f:
-    #     json.dump(main_index, f, default=default)
-    #     print("File index made")
+    # ensuring main_index.json gets dumped in inverted-index-m1 directory instead of DEV 
+    os.chdir("../inverted-index-m1")
+    
+    # dumping main_index into a json
+    with open("main_index.json", 'w') as f:
+        json.dump(main_index, f, default=default)
+        print("File index made")
+    
+    with open("url_index.json", "w") as f:
+        json.dump(url_index, f, default=default)
+        print("URL index made")
     #
     # print(f"Number of documents: {docID + 1}")
     # print(f"Number of tokens: {len(main_index)}")
@@ -100,8 +107,3 @@ def indexer():
     # print(main_index)
     # print('url index')
     # print(url_index)  
-    
-    return (main_index, url_index)
-    
-if __name__ == "__main__":
-    main_index = indexer()

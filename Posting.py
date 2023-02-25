@@ -1,10 +1,11 @@
 import json
 class Posting:
     '''class object for keeping track of instances in the index'''
-    def __init__(self, inputDocID = None) -> None:
+    def __init__(self, inputDocID, inputToken) -> None:
         self.docID = inputDocID
         self.freq = 0
         self.positionList = []
+        self.token = inputToken
         
     def get_docID(self):
         return self.docID
@@ -28,8 +29,11 @@ class Posting:
         return self.docID < other.docID
     
     def __eq__(self, other):
-        return self.docID == other.docID
-        
+        return self.docID == other.docID and self.token == other.token
+
+    def __hash__(self):
+        return hash((self.docID, self.token))
+
     def __str__(self) -> str:
         return f"Posting(freq: {self.freq})"
     
