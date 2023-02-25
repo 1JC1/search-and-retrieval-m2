@@ -30,7 +30,7 @@ def intersect(list_1, list_2, postings, first = False):
     while p1 < len(list_1) and p2 < len(list_2):
         if list_1[p1] == list_2[p2]:
             shared_docID = list_1[p1].get_docID()
-            result_docIDs.append(shared_docID)
+            result_docIDs.append(list_2[p2])
             if first:
                 postings[shared_docID].append(list_1[p1])
             postings[shared_docID].append(list_2[p2])
@@ -64,16 +64,17 @@ def search(tokens: set[str], index):
     token_list.sort(key=lambda t: len(index[t]))
     
     result_list = []
+    posting_dict = defaultdict(list)
     
     if len(token_list) > 1:
-        posting_dict = defaultdict(list)
         result_list, posting_dict = intersect(index[token_list[0]], index[token_list[1]], posting_dict, True)
         
         for i in range(2,len(token_list)):
             result_list, posting_dict = intersect(result_list, index[token_list[i]], posting_dict)
         
     elif len(token_list) == 1:
-        result_list = index[token_list[0]]
+        for post in index[token_list[0]]:
+            posting_dict[post.get_docID()].append(post)
 
     return simple_rank(posting_dict)
 
