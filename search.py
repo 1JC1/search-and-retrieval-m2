@@ -21,32 +21,41 @@ def process_query(query: str):
     
     return tokens_to_search
 
-def intersect(list_1, list_2):
-    answer = set()
+def intersect(list_1, list_2, postings, first = False):
+    result_docIDs = []
+    new_postings = defaultdict()
     p1 = 0
     p2 = 0
     
     while p1 < len(list_1) and p2 < len(list_2):
         if list_1[p1] == list_2[p2]:
-            answer.add(list_1[p1])
-            answer.add(list_1[p2])
+            shared_docID = list_1[p1].get_docID()
+            result_docIDs.append(shared_docID)
+            if first:
+                postings[shared_docID].append(list_1[p1])
+            postings[shared_docID].append(list_2[p2])
             p1 += 1
             p2 += 1
         elif list_1[p1] < list_2[p2]:
             p1 += 1
         else:
             p2 += 1
+            
+    for id in result_docIDs:
+        new_postings[id] = postings[id]
     
-    return answer
+    return (result_docIDs, new_postings)
 
 
-def simple_rank(result_list):
-    rel_score = defaultdict(float)
 
-    for posting in result_list:
-        rel_score[posting.get_docID()] += posting.get_freq()
+def simple_rank(postings):
+    rel_score = defaultdict(int)
 
-    return sorted(rel_score, key=lambda x : rel_score[x], reverse=True)[0:5] 
+    for id in postings.keys():
+        for post in postings:
+            rel_score[id] += post.get_freq()
+
+    return sorted(rel_score.keys(), key=lambda x : rel_score[x], reverse=True)[0:5] 
     
 
     
@@ -57,16 +66,18 @@ def search(tokens: set[str], index):
     result_list = []
     
     if len(token_list) > 1:
-        result_list = intersect(index[token_list[0]], index[token_list[1]])
+        posting_dict = defaultdict(list)
+        result_list, posting_dict = intersect(index[token_list[0]], index[token_list[1]], posting_dict, True)
         
         for i in range(2,len(token_list)):
-            result_list = intersect(result_list, index[token_list[i]])
+            result_list, posting_dict = intersect(result_list, index[token_list[i]], posting_dict)
         
     elif len(token_list) == 1:
         result_list = index[token_list[0]]
 
-    return simple_rank(result_list)
+    return simple_rank(posting_dict)
 
+ 
  
 if __name__ == "__main__":
     token_index, url_index = indexer()
