@@ -41,8 +41,8 @@ def intersect(list_1, list_2, postings, first = False):
         else:
             p2 += 1
             
-    for id in result_docIDs:
-        new_postings[id] = postings[id]
+    for post in result_docIDs:
+        new_postings[post.get_docID()] = postings[id]
     
     return (result_docIDs, new_postings)
 
