@@ -91,8 +91,8 @@ if __name__ == "__main__":
         result_list = search(process_query(query), token_index)
         
         print(f"Searching for query {query}... ")
-        for count, result in enumerate(result_list, start=1):
-            print(f"{count} | {url_index[result.get_docID()]:100} | {result.get_freq()}")
+        for count, id in enumerate(result_list, start=1):
+            print(f"{count} | {url_index[id]:100}")
         
         print()
     
