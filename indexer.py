@@ -87,14 +87,17 @@ def indexer():
     # ensuring main_index.json gets dumped in inverted-index-m1 directory instead of DEV 
     os.chdir("../inverted-index-m1")
     
+    print("Dumping index...")
+    
     # dumping main_index into a json
     with open("main_index.json", 'w') as f:
         json.dump(main_index, f, default=default)
-        print("File index made")
+        
+    print("File index made\n")
     
     print(f"Number of documents: {docID + 1}")
     print(f"Number of tokens: {len(main_index)}")
-    print(f"Size of index: {sys.getsizeof(main_index)}")
+    print(f"Size of index: {sys.getsizeof(main_index)}\n")
 
     # print('main index:')
     # print(main_index)

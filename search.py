@@ -52,7 +52,7 @@ def simple_rank(postings):
     rel_score = defaultdict(int)
 
     for id in postings.keys():
-        for post in postings:
+        for post in postings[id]:
             rel_score[id] += post.get_freq()
 
     return sorted(rel_score.keys(), key=lambda x : rel_score[x], reverse=True)[0:5] 
